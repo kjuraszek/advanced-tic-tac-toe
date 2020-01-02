@@ -7,28 +7,57 @@ Working demo is available [here](https://portfolio.kjuraszek.pl/advanced-tic-tac
 
 Create new react project:
 
-### `npx create-react-app advanced-tic-tac-toe`
+#### `npx create-react-app advanced-tic-tac-toe`
 
 Replace files and catalogues with these from project:
 
-### `public src readme.md package.json`
+#### `public src readme.md package.json`
 
 Running:
 
-### `npm start`
+#### `npm start`
 
 in the project directory runs the app in the development mode.<br>
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 Running:
 
-### `npm run build`
+#### `npm run build`
 
 builds the app for production to the `build` folder.<br>
 
+## Game settings
+
+This is extended version of the game.<br>
+Available settings:
+* set names for Human players (Computer player is always Computer)
+* set board size (width in squares, minimum: 3)
+* set scoring length (between 3 and board size)
+* game mode (play with Computer or Human player)
+
+## Game controls
+
+Game is controlled by mouse or by touchscreen (on mobile devices).
+
+You have 3 control buttons:
+* reset game - clears squares and resets score
+* undo - undos Your last move
+* new game - generates clear board and resets score
+* change settings - stops game and shows You settings view
+
 ## Game rules
 
-This is basic version of the game - both players are controlled by human.<br>
-First player who scores his three symbols ( X , O ) in one line (vertical, horizontal or diagonal) wins.
+X player starts.<br>
+Each `scoring length` long line (vertical, horizontal or diagonals) of exact symbols gives the same amount of points as its length.<br>
+
+`Important!` Each square can be used only once for each direction (vertical, horizontal or diagonal).<br>
+
+Types of squares:
+* $ gives You 2 points
+* ? randomly gives You OR substracts 4 points from You
+* ! is a blocked square
+* @ substracts 1 point from You but gives You additional move
+* (empty field) gives You 1 point
+
 
 Gameplay will be extended in the future.
