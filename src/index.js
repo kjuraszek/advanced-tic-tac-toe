@@ -18,21 +18,21 @@ function Square(props) {
             insideClass = '';
     }
     
-let squareClass =`square 
-${props.horizontal ? 'horizontal ' : ''}
-${props.vertical ? 'vertical' : ''}
-${props.diagonal1 ? 'diagonal1' : ''}
-${props.diagonal2 ? 'diagonal2' : ''}`;
-  return (
-    <button className={squareClass} 
-      onClick={props.onClick}>
-      <div className="horizontal-line"></div>
-      <div className="vertical-line"></div>
-      <div className="diagonal1-line"></div>
-      <div className="diagonal2-line"></div>
-      <div className={insideClass}>{props.value}</div>   
-    </button>
-  );
+    let squareClass =`square 
+    ${props.horizontal ? 'horizontal ' : ''}
+    ${props.vertical ? 'vertical' : ''}
+    ${props.diagonal1 ? 'diagonal1' : ''}
+    ${props.diagonal2 ? 'diagonal2' : ''}`;
+    return (
+        <button className={squareClass} 
+        onClick={props.onClick}>
+        <div className="horizontal-line"></div>
+        <div className="vertical-line"></div>
+        <div className="diagonal1-line"></div>
+        <div className="diagonal2-line"></div>
+        <div className={insideClass}>{props.value}</div>   
+        </button>
+    );
 }
 
 class Board extends React.Component {
@@ -79,11 +79,12 @@ class Board extends React.Component {
 class Game extends React.Component {
   constructor(props) {
     super(props);
-      let boardSize = this.props.settings.boardSize;
+    const boardSize = this.props.settings.boardSize;
+    const boardType = this.props.settings.boardType;
     this.state = {
       history: [
         {
-          squares: this.generateBoard(boardSize),
+          squares: this.generateBoard(boardSize, boardType),
           vertical: Array(boardSize ** 2).fill(null),
           horizontal: Array(boardSize ** 2).fill(null),
           diagonal1: Array(boardSize ** 2).fill(null),
@@ -218,10 +219,11 @@ class Game extends React.Component {
     
 newGame(){
     const boardSize = this.state.settings.boardSize;
+    const boardType = this.state.settings.boardType;
     this.setState ({
       history: [
         {
-          squares: this.generateBoard(boardSize),
+          squares: this.generateBoard(boardSize, boardType),
           vertical: Array(boardSize ** 2).fill(null),
           horizontal: Array(boardSize ** 2).fill(null),
           diagonal1: Array(boardSize ** 2).fill(null),
@@ -391,8 +393,8 @@ const settings = this.state.settings;
  diagonalSecondCheck(pos,a){
 const settings = this.state.settings;
     
-    let width = settings.boardSize;   
-    let length = settings.scoringLength;
+    const width = settings.boardSize;   
+    const length = settings.scoringLength;
      const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     let diagonal2 = current.diagonal2;
@@ -417,28 +419,30 @@ const settings = this.state.settings;
 
 }
 
- generateBoard(width){
-
-     let board = Array(width**2).fill(null);
-    let symbols = ["!","@","$","?"];
-    let ids = [];
+ generateBoard(width, boardType){
+    const symbols = ["!","@","$","?"];
+    let board = Array(width**2).fill(null);
+    
+    if(boardType !== "NoExtras"){
+        let ids = [];
+        let extrasMultiplier = (boardType === "SomeExtras" ? 0.4 : 0.8);
+        while(ids.length < Math.floor(board.length * extrasMultiplier)){
+            let id = Math.floor(Math.random() * board.length)
+            if(ids.indexOf(id) === -1){
+                ids.push(id);
+            }
+            
+        }
      
-     while(ids.length < Math.floor(board.length*0.4)){
-         let id = Math.floor(Math.random() * board.length)
-         if(ids.indexOf(id) === -1){
-             ids.push(id);
-         }
-         
-     }
-     
-    for(let i=0;i<ids.length;i++){
-        board[ids[i]] = symbols[Math.floor(Math.random() * symbols.length)];
+        for(let i=0;i<ids.length;i++){
+            board[ids[i]] = symbols[Math.floor(Math.random() * symbols.length)];
+        }
     }
     return board;
 }
 
   render() {
-      const settings = this.state.settings;
+    const settings = this.state.settings;
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const currentPlayer = current.currentPlayer;
@@ -446,21 +450,21 @@ const settings = this.state.settings;
    
     const width = settings.boardSize;   
     const length = settings.scoringLength;
-    
-      
-      if(computerPlayer){
-          current.playerX += length * this.calculatePoints(current.squares, "X");
-          current.playerO += length * this.calculatePoints(current.squares, "O");
-      } else if(currentPlayer === "X"){
-          current.playerX += length * this.calculatePoints(current.squares, "X");
-      } else{
-          current.playerO += length * this.calculatePoints(current.squares, "O");
-      }
+ 
+    if(computerPlayer){
+        current.playerX += length * this.calculatePoints(current.squares, "X");
+        current.playerO += length * this.calculatePoints(current.squares, "O");
+    } else if(currentPlayer === "X"){
+        current.playerX += length * this.calculatePoints(current.squares, "X");
+    } else{
+        current.playerO += length * this.calculatePoints(current.squares, "O");
+    }
     
     let emptySquares = current.squares.filter(function(x){if(x===null || x==="?" ||x==="$" ||x==="@"){return "1"}});
 
     let nextPlayer = "Next player: " + (current.xIsNext ? "X" : "O");
     let squaresLeft = "Squares left: " + (emptySquares.length);
+    let scoringLength = "Scoring length: " + length;
     let playerX = current.playerX;
     let playerO = current.playerO;
     
@@ -494,6 +498,7 @@ const settings = this.state.settings;
           <div>Player <span style={{background: "black",color:"azure",fontFamily: "monotype",padding: "2px"}}>O</span> points: {playerO} <strong>[{settings.playerOName}]</strong></div>
           <div>{nextPlayer}</div>
           <div>{squaresLeft}</div>
+          <div>{scoringLength}</div>
         <hr></hr>
             <h2>Controls</h2>
           <div><button onClick={() => this.jumpTo(0)}>Reset game</button></div>
@@ -525,6 +530,7 @@ class Settings extends React.Component {
       boardSize: this.props.settings.boardSize,
       scoringLength: this.props.settings.scoringLength,
       gameMode: this.props.settings.gameMode,
+      boardType: this.props.settings.boardType,
     };
       
   }
@@ -635,6 +641,12 @@ class Settings extends React.Component {
             <option value="PvP">Player vs Player</option>
             <option value="PvE">Player vs EasyComp</option>
             </select></p>
+            <p><label htmlFor="boardtype">Board type: </label>
+            <select name = "boardtype" value={current.boardType} onChange={(e) => this.setState({boardType: e.target.value})}>
+            <option value="NoExtras">Empty fields only</option>
+            <option value="SomeExtras">Some extra fields</option>
+            <option value="ManyExtras">Many extra fields</option>
+            </select></p>
 
 
             <button onClick={() => this.inputCheck()} >Save settings and play!</button>
@@ -653,7 +665,8 @@ class App extends React.Component {
         playerOName: "PlayerO",
         gameMode: "PvE",
         boardSize: 12,
-        scoringLength: 3 
+        scoringLength: 3,
+        boardType: "SomeExtras"
     };
   }
     saveSettings(userSettings){
@@ -663,6 +676,7 @@ class App extends React.Component {
             playerOName: userSettings.gameMode === "PvP" ? userSettings.playerOName : "Computer",
             gameMode: userSettings.gameMode,
             boardSize: userSettings.boardSize,
+            boardType: userSettings.boardType,
             scoringLength: userSettings.scoringLength
         });
     }

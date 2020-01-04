@@ -1,11 +1,11 @@
 This project is an Advanced Tic Tac Toe game.
 
-It's based on React tutorial [link](https://reactjs.org/tutorial/tutorial.html).
-Working demo is available [here](https://portfolio.kjuraszek.pl/advanced-tic-tac-toe/).
+It's based on a React tutorial [link](https://reactjs.org/tutorial/tutorial.html).<br>
+The working demo is available [here](https://portfolio.kjuraszek.pl/advanced-tic-tac-toe/).
 
 ## How to run this app ?
 
-Create new react project:
+Create a new react project:
 
 #### `npx create-react-app advanced-tic-tac-toe`
 
@@ -28,12 +28,13 @@ builds the app for production to the `build` folder.<br>
 
 ## Game settings
 
-This is extended version of the game.<br>
+This is an extended version of the game.<br>
 Available settings:
-* set names for Human players (Computer player is always Computer)
+* set names for Human players (the computer player is always Computer)
 * set board size (width in squares, minimum: 3)
 * set scoring length (between 3 and board size)
 * game mode (play with Computer or Human player)
+* board type - clean board or with some `powerups`
 
 ## Game controls
 
@@ -48,15 +49,15 @@ You have 3 control buttons:
 ## Game rules
 
 X player starts.<br>
-Each `scoring length` long line (vertical, horizontal or diagonals) of exact symbols gives the same amount of points as its length.<br>
+Each `scoring length` long line (vertical, horizontal or diagonal) of exact symbols gives the same amount of points as its length.<br>
 
 `Important!` Each square can be used only once for each direction (vertical, horizontal or diagonal).<br>
 
 Types of squares:
 * $ gives You 2 points
-* ? randomly gives You OR substracts 4 points from You
+* ? randomly gives You OR subtracts 4 points from You
 * ! is a blocked square
-* @ substracts 1 point from You but gives You additional move
+* @ subtracts 1 point from You but gives You additional move
 * (empty field) gives You 1 point
 
 
