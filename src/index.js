@@ -37,7 +37,6 @@ function Square(props) {
 
 class Board extends React.Component {
   renderSquare(i) {
-      //console.log(this.props.squares[i][0]);
     return (
       <Square
         key={i}
@@ -110,7 +109,7 @@ class Game extends React.Component {
      let playerO  = current.playerO;
      let currentPlayer  = current.currentPlayer;
       let xIsNext = current.xIsNext;
-      const computerPlayer = settings.gameMode === "PvE" ? true : false;
+      const computerPlayer = settings.gameMode === "PvP" ? false : true;
     
     if (squares[i] === "!" || squares[i] === "X" || squares[i] === "O") {
       return;
@@ -173,9 +172,7 @@ class Game extends React.Component {
               emptySquares.splice(emptySquares.indexOf(num), 1);
               num = emptySquares[Math.floor(Math.random() * emptySquares.length)];
           }
-          
-          
-          //console.log(emptySquares);
+
           if(squares[num] === null){
               squares[num] = "O";
               playerO += 1;
@@ -261,20 +258,16 @@ calculatePoints(squares, player) {
 
                 if(!vertical[i] && this.verticalCheck(i,squares)){
                     points+=1;
-                    //console.log((!this.state.xIsNext ? "X" : "O") +': got vertical!');
                 } 
                 if(!horizontal[i] && this.horizontalCheck(i,squares)){
                     points+=1;
-                    //console.log((!this.state.xIsNext ? "X" : "O") +': got horizontal!');
                 } 
                 if(!diagonal1[i] && this.diagonalFirstCheck(i,squares)){
                     points+=1;
-                    //console.log((!this.state.xIsNext ? "X" : "O") +': got diagonal1!');
                 }
                 if(i >= width * (length-1)){
                     if(!diagonal2[i] && this.diagonalSecondCheck(i,squares)){
                     points+=1;
-                        //console.log((!this.state.xIsNext ? "X" : "O") +': got diagonal2!');
                 }
                 }
 
@@ -282,11 +275,9 @@ calculatePoints(squares, player) {
 
                 if(!horizontal[i] && this.horizontalCheck(i,squares)){
                     points+=1;
-                    //console.log((!this.state.xIsNext ? "X" : "O") +': got horizontal!');
                 } 
                 if(!diagonal2[i] && this.diagonalSecondCheck(i,squares)){
                     points+=1;
-                    //console.log((!this.state.xIsNext ? "X" : "O") +': got diagonal2!');
                 }
 
 
@@ -294,7 +285,6 @@ calculatePoints(squares, player) {
 
                 if(!vertical[i] && this.verticalCheck(i,squares)){
                     points+=1;
-                    //console.log((!this.state.xIsNext ? "X" : "O") +': got vertical!');
                 }  
             } 
             } 
@@ -423,10 +413,11 @@ const settings = this.state.settings;
     const symbols = ["!","@","$","?"];
     let board = Array(width**2).fill(null);
     
-    if(boardType !== "NoExtras"){
+    if(boardType !== "NoPowerups"){
+        const powerupsMultiplier = (boardType === "SomePowerups" ? 0.4 : 0.8);
         let ids = [];
-        let extrasMultiplier = (boardType === "SomeExtras" ? 0.4 : 0.8);
-        while(ids.length < Math.floor(board.length * extrasMultiplier)){
+        
+        while(ids.length < Math.floor(board.length * powerupsMultiplier)){
             let id = Math.floor(Math.random() * board.length)
             if(ids.indexOf(id) === -1){
                 ids.push(id);
@@ -462,11 +453,24 @@ const settings = this.state.settings;
     
     let emptySquares = current.squares.filter(function(x){if(x===null || x==="?" ||x==="$" ||x==="@"){return "1"}});
 
-    let nextPlayer = "Next player: " + (current.xIsNext ? "X" : "O");
     let squaresLeft = "Squares left: " + (emptySquares.length);
     let scoringLength = "Scoring length: " + length;
     let playerX = current.playerX;
     let playerO = current.playerO;
+    let nextPlayer;
+    if(emptySquares.length > 0){
+        nextPlayer = "Next player: " + (current.xIsNext ? "X" : "O");
+    } else {
+        if(current.playerX === current.playerO){
+            nextPlayer = "It's a draw!";
+        } else if(current.playerX > current.playerO) {
+            nextPlayer = settings.playerXName + " won!";
+        } else if(current.playerO > current.playerX) {
+            nextPlayer = settings.playerOName + " won!";
+        } else {
+            nextPlayer = "There's no winner, try again!";
+        }
+    }
     
     let undoButton;
     if(this.state.stepNumber > 0 && emptySquares.length > 0){
@@ -492,11 +496,12 @@ const settings = this.state.settings;
           />
         </div>
         <div className="game-info">
+            <h2>{nextPlayer}</h2>
+            <hr></hr>
             <h2>Match highlights</h2>
-            <h3>{settings.playerXName} vs {settings.playerOName}</h3>
+            <h3>{settings.playerXName} <i>vs</i> {settings.playerOName}</h3>
           <div>Player <span style={{background: "black",color:"#e26e6e",fontFamily: "monotype",padding: "2px"}}>X</span> points: {playerX} <strong>[{settings.playerXName}]</strong></div>
           <div>Player <span style={{background: "black",color:"azure",fontFamily: "monotype",padding: "2px"}}>O</span> points: {playerO} <strong>[{settings.playerOName}]</strong></div>
-          <div>{nextPlayer}</div>
           <div>{squaresLeft}</div>
           <div>{scoringLength}</div>
         <hr></hr>
@@ -509,9 +514,9 @@ const settings = this.state.settings;
             <h2>Legend</h2>
             <ul>
             <li><strong>$</strong> gives You 2 points</li>
-            <li><strong>?</strong> randomly gives You OR substracts 4 points from You</li>
+            <li><strong>?</strong> randomly gives You OR subtracts 4 points from You</li>
             <li><strong>!</strong> is a blocked square</li>
-            <li><strong>@</strong> substracts 1 point from You but gives You additional move</li>
+            <li><strong>@</strong> subtracts 1 point from You but gives You additional move</li>
             <li><strong>(empty field)</strong> gives You 1 point</li>
             </ul>
     
@@ -643,9 +648,9 @@ class Settings extends React.Component {
             </select></p>
             <p><label htmlFor="boardtype">Board type: </label>
             <select name = "boardtype" value={current.boardType} onChange={(e) => this.setState({boardType: e.target.value})}>
-            <option value="NoExtras">Empty fields only</option>
-            <option value="SomeExtras">Some extra fields</option>
-            <option value="ManyExtras">Many extra fields</option>
+            <option value="NoPowerups">Empty fields only</option>
+            <option value="SomePowerups">Some powerups fields</option>
+            <option value="ManyPowerups">Many powerups fields</option>
             </select></p>
 
 
@@ -666,7 +671,7 @@ class App extends React.Component {
         gameMode: "PvE",
         boardSize: 12,
         scoringLength: 3,
-        boardType: "SomeExtras"
+        boardType: "SomePowerups"
     };
   }
     saveSettings(userSettings){
@@ -688,7 +693,6 @@ class App extends React.Component {
     
     render(){
         let current = this.state;
-        console.log(current);
         if (this.state.settingsPage){
             return(
                 
