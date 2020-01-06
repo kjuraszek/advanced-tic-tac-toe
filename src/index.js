@@ -105,12 +105,13 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
-     let playerX  = current.playerX;
-     let playerO  = current.playerO;
-     let currentPlayer  = current.currentPlayer;
-      let xIsNext = current.xIsNext;
-      const computerPlayer = settings.gameMode === "PvP" ? false : true;
-    
+    const computerPlayer = settings.gameMode === "PvP" ? false : true;
+
+    let playerX  = current.playerX;
+    let playerO  = current.playerO;
+    let currentPlayer  = current.currentPlayer;
+    let xIsNext = current.xIsNext;
+ 
     if (squares[i] === "!" || squares[i] === "X" || squares[i] === "O") {
       return;
     } else if(squares[i] === "?") {
@@ -141,98 +142,115 @@ class Game extends React.Component {
     }
       
 
-      let vertical = current.vertical.slice();
-      let horizontal = current.horizontal.slice();
-      let diagonal1 = current.diagonal1.slice();
-      let diagonal2 = current.diagonal2.slice();
+    let vertical = current.vertical.slice();
+    let horizontal = current.horizontal.slice();
+    let diagonal1 = current.diagonal1.slice();
+    let diagonal2 = current.diagonal2.slice();
       
     
-      if(squares[i] === "@") {
-          squares[i] = xIsNext ? "X" : "O";
-      } else {
-          squares[i] = xIsNext ? "X" : "O";
-          xIsNext = !xIsNext;
-          
-      }
-      currentPlayer = squares[i];
+    if(squares[i] === "@") {
+        squares[i] = xIsNext ? "X" : "O";
+    } else {
+        squares[i] = xIsNext ? "X" : "O";
+        xIsNext = !xIsNext;
+        
+    }
+    currentPlayer = squares[i];
+    
+    let emptySquares = [];
+    let powerupsSquares = [];
+    for(let j = 0; j < squares.length; j++){  
+        if(squares[j] === null || squares[j] === "?" || squares[j] === "$" || squares[j] === "@"){
+            emptySquares.push(j);
+        }
+        if(squares[j] === "?" || squares[j] === "$" || squares[j] === "@"){
+            powerupsSquares.push(j);
+        }
+    }
+    
+    // computer player turn
+    if(!xIsNext && emptySquares.length > 0 && computerPlayer){
       
-      let emptySquares = [];
-      for(let j = 0; j < squares.length; j++){  
-          if(squares[j] === null || squares[j] === "?" || squares[j] === "$" || squares[j] === "@"){
-              emptySquares.push(j);
-          }
-      }
-      
-      if(!xIsNext && emptySquares.length > 0 && computerPlayer){
-          let num = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+        if(settings.gameMode === "PvH"){
+            //hard computer
+            /*
+            1. seek for empty powerup field
+            2. if not - seek for empty field near 'O' field
+            3. if not - select random field from emptySquares
+            */
 
-          while(squares[num] === "@" && emptySquares.length > 0){
+        } else {
+            //easy computer by default
+            let num = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+
+            while(squares[num] === "@" && emptySquares.length > 0){
             squares[num] = "O";
-              playerO -= 1;
-              emptySquares.splice(emptySquares.indexOf(num), 1);
-              num = emptySquares[Math.floor(Math.random() * emptySquares.length)];
-          }
+                playerO -= 1;
+                emptySquares.splice(emptySquares.indexOf(num), 1);
+                num = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+            }
 
-          if(squares[num] === null){
-              squares[num] = "O";
-              playerO += 1;
-          } else if(squares[num] === "$"){
-              squares[num] = "O";
-              playerO += 2;
-          } else if(squares[num] === "?"){
-              squares[num] = "O";
-              let mysteryValues = [-4,4];
-              playerO += mysteryValues[Math.floor(Math.random() * mysteryValues.length)];
-          }
-          xIsNext = true;
-          
-      }
+            if(squares[num] === null){
+                squares[num] = "O";
+                playerO += 1;
+            } else if(squares[num] === "$"){
+                squares[num] = "O";
+                playerO += 2;
+            } else if(squares[num] === "?"){
+                squares[num] = "O";
+                let mysteryValues = [-4,4];
+                playerO += mysteryValues[Math.floor(Math.random() * mysteryValues.length)];
+            }
+            xIsNext = true;
+        }
+        
+        
+    }
 
     this.setState({
-      history: history.concat([
+        history: history.concat([
         {
-          squares: squares,
-          vertical: vertical,
+            squares: squares,
+            vertical: vertical,
             horizontal: horizontal,
-          diagonal1: diagonal1,
-          diagonal2: diagonal2,
+            diagonal1: diagonal1,
+            diagonal2: diagonal2,
             playerX: playerX,
-          playerO: playerO,
+            playerO: playerO,
             currentPlayer: currentPlayer,
             xIsNext: xIsNext
         }
-      ]),
-      stepNumber: history.length
+        ]),
+        stepNumber: history.length
       
             
     });
-  }
+}
 
-  jumpTo(step) {
+jumpTo(step) {
     this.setState({
-      stepNumber: step
+        stepNumber: step
     });
-  }
+}
     
 newGame(){
     const boardSize = this.state.settings.boardSize;
     const boardType = this.state.settings.boardType;
     this.setState ({
-      history: [
+        history: [
         {
-          squares: this.generateBoard(boardSize, boardType),
-          vertical: Array(boardSize ** 2).fill(null),
-          horizontal: Array(boardSize ** 2).fill(null),
-          diagonal1: Array(boardSize ** 2).fill(null),
-          diagonal2: Array(boardSize ** 2).fill(null),
-          playerX: 0,
-          playerO: 0,
-          currentPlayer: "X",
-        xIsNext: true
-            
+            squares: this.generateBoard(boardSize, boardType),
+            vertical: Array(boardSize ** 2).fill(null),
+            horizontal: Array(boardSize ** 2).fill(null),
+            diagonal1: Array(boardSize ** 2).fill(null),
+            diagonal2: Array(boardSize ** 2).fill(null),
+            playerX: 0,
+            playerO: 0,
+            currentPlayer: "X",
+            xIsNext: true          
         }
-      ],
-      stepNumber: 0
+        ],
+        stepNumber: 0
     });
     
 }
@@ -243,13 +261,13 @@ calculatePoints(squares, player) {
     const current = history[history.length - 1];
     const settings = this.state.settings;
     
-    let width = settings.boardSize;   
-    let length = settings.scoringLength;
+    const width = settings.boardSize;   
+    const length = settings.scoringLength;
     
     let vertical = current.vertical;
     let horizontal = current.horizontal;
-      let diagonal1 = current.diagonal1;
-      let diagonal2 = current.diagonal2;
+    let diagonal1 = current.diagonal1;
+    let diagonal2 = current.diagonal2;
 
     let points = 0;
     for(let i=0;i<width**2;i++){
@@ -287,10 +305,10 @@ calculatePoints(squares, player) {
                     points+=1;
                 }  
             } 
-            } 
-        }      
+        } 
+    }      
   
-  return points;
+    return points;
     
 }
 verticalCheck(pos,a){
@@ -409,7 +427,7 @@ const settings = this.state.settings;
 
 }
 
- generateBoard(width, boardType){
+generateBoard(width, boardType){
     const symbols = ["!","@","$","?"];
     let board = Array(width**2).fill(null);
     
@@ -432,12 +450,12 @@ const settings = this.state.settings;
     return board;
 }
 
-  render() {
+render() {
     const settings = this.state.settings;
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const currentPlayer = current.currentPlayer;
-    const computerPlayer = settings.gameMode === "PvE" ? true : false;
+    const computerPlayer = (settings.gameMode === "PvP" ? false : true);
    
     const width = settings.boardSize;   
     const length = settings.scoringLength;
@@ -645,6 +663,7 @@ class Settings extends React.Component {
             <select name = "gamemode" value={current.gameMode} onChange={(e) => this.setState({gameMode: e.target.value})}>
             <option value="PvP">Player vs Player</option>
             <option value="PvE">Player vs EasyComp</option>
+            <option value="PvH">Player vs HardComp</option>
             </select></p>
             <p><label htmlFor="boardtype">Board type: </label>
             <select name = "boardtype" value={current.boardType} onChange={(e) => this.setState({boardType: e.target.value})}>
