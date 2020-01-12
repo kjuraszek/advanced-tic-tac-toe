@@ -106,6 +106,7 @@ class Game extends React.Component {
     const current = history[history.length - 1];
     const squares = current.squares.slice();
     const computerPlayer = settings.gameMode === "PvP" ? false : true;
+    const mysteryValues = [-4,4];
 
     let playerX  = current.playerX;
     let playerO  = current.playerO;
@@ -115,7 +116,7 @@ class Game extends React.Component {
     if (squares[i] === "!" || squares[i] === "X" || squares[i] === "O") {
       return;
     } else if(squares[i] === "?") {
-        let mysteryValues = [-4,4];
+        
         if(xIsNext){
            playerX += mysteryValues[Math.floor(Math.random() * mysteryValues.length)];
         } else {
@@ -158,20 +159,10 @@ class Game extends React.Component {
     currentPlayer = squares[i];
     
     let emptySquares = [];
-    let powerupsSquares = [];
-    let playerOSquares = [];
     for(let j = 0; j < squares.length; j++){  
         if(squares[j] === null || squares[j] === "?" || squares[j] === "$" || squares[j] === "@"){
             // all squares left
             emptySquares.push(j);
-        }
-        if(squares[j] === "?" || squares[j] === "$" || squares[j] === "@"){
-            // powerup squares left
-            powerupsSquares.push(j);
-        }
-        if(squares[j] === "O" ){
-            // computer player squares
-            playerOSquares.push(j);
         }
     }
     
@@ -180,100 +171,13 @@ class Game extends React.Component {
       
         if(settings.gameMode === "PvH"){
             // hard computer
-
-            let possibleSquares = [];
-            for(let i = 0; i < playerOSquares.length; i++){ 
-                // seek for neighbours of "O" squares
-                possibleSquares = possibleSquares.concat(this.checkNeighbours(squares, playerOSquares[i]));
-            }
-            
-            possibleSquares = possibleSquares.concat(powerupsSquares);
-
-            // remove duplicated values
-            possibleSquares = possibleSquares.reduce(function(a,b){
-                if (a.indexOf(b) < 0 ) a.push(b);
-                return a;
-              },[]);
-              
-            // preffered square is a powerup square or neighbour of "O"
-            if(possibleSquares.length > 0){
-                let num = possibleSquares[Math.floor(Math.random() * possibleSquares.length)];
-
-                while(squares[num] === "@" && possibleSquares.length > 0){
-                    squares[num] = "O";
-                    playerO -= 1;
-                    possibleSquares = possibleSquares.concat(this.checkNeighbours(squares, num));
-                    possibleSquares.splice(possibleSquares.indexOf(num), 1);
-                    possibleSquares = possibleSquares.reduce(function(a,b){
-                        if (a.indexOf(b) < 0 ) a.push(b);
-                        return a;
-                      },[]);
-                    num = possibleSquares[Math.floor(Math.random() * possibleSquares.length)];
-                }
-    
-                if(squares[num] === null){
-                    squares[num] = "O";
-                    playerO += 1;
-                } else if(squares[num] === "$"){
-                    squares[num] = "O";
-                    playerO += 2;
-                } else if(squares[num] === "?"){
-                    squares[num] = "O";
-                    let mysteryValues = [-4,4];
-                    playerO += mysteryValues[Math.floor(Math.random() * mysteryValues.length)];
-                }
-                xIsNext = true;
-  
-            } else {
-                let num = emptySquares[Math.floor(Math.random() * emptySquares.length)];
-
-                while(squares[num] === "@" && emptySquares.length > 0){
-                    squares[num] = "O";
-                    playerO -= 1;
-                    emptySquares.splice(emptySquares.indexOf(num), 1);
-                    num = emptySquares[Math.floor(Math.random() * emptySquares.length)];
-                }
-    
-                if(squares[num] === null){
-                    squares[num] = "O";
-                    playerO += 1;
-                } else if(squares[num] === "$"){
-                    squares[num] = "O";
-                    playerO += 2;
-                } else if(squares[num] === "?"){
-                    squares[num] = "O";
-                    let mysteryValues = [-4,4];
-                    playerO += mysteryValues[Math.floor(Math.random() * mysteryValues.length)];
-                }
-                xIsNext = true;
-            }
-
+            playerO += this.hardComputerPlayer(squares); 
         } else {
             //easy computer by default
-            let num = emptySquares[Math.floor(Math.random() * emptySquares.length)];
-
-            while(squares[num] === "@" && emptySquares.length > 0){
-                squares[num] = "O";
-                playerO -= 1;
-                emptySquares.splice(emptySquares.indexOf(num), 1);
-                num = emptySquares[Math.floor(Math.random() * emptySquares.length)];
-            }
-
-            if(squares[num] === null){
-                squares[num] = "O";
-                playerO += 1;
-            } else if(squares[num] === "$"){
-                squares[num] = "O";
-                playerO += 2;
-            } else if(squares[num] === "?"){
-                squares[num] = "O";
-                let mysteryValues = [-4,4];
-                playerO += mysteryValues[Math.floor(Math.random() * mysteryValues.length)];
-            }
-            xIsNext = true;
+            playerO += this.easyComputerPlayer(squares, emptySquares);   
         }
         
-        
+        xIsNext = true;
     }
 
     this.setState({
@@ -294,6 +198,102 @@ class Game extends React.Component {
       
             
     });
+}
+
+hardComputerPlayer(squares){
+    const mysteryValues = [-4,4];
+
+    let emptySquares = [];
+    let powerupsSquares = [];
+    let playerOSquares = [];
+    let possibleSquares = [];
+    let points = 0;
+
+    for(let j = 0; j < squares.length; j++){  
+        if(squares[j] === null || squares[j] === "?" || squares[j] === "$" || squares[j] === "@"){
+            // all squares left
+            emptySquares.push(j);
+        }
+        if(squares[j] === "?" || squares[j] === "$" || squares[j] === "@"){
+            // powerup squares left
+            powerupsSquares.push(j);
+        }
+        if(squares[j] === "O" ){
+            // computer player squares
+            playerOSquares.push(j);
+        }
+    }
+    
+    for(let i = 0; i < playerOSquares.length; i++){ 
+        // seek for neighbours of "O" squares
+        possibleSquares = possibleSquares.concat(this.checkNeighbours(squares, playerOSquares[i]));
+    }
+    
+    possibleSquares = possibleSquares.concat(powerupsSquares);
+
+    // remove duplicated values
+    possibleSquares = possibleSquares.reduce(function(a,b){
+        if (a.indexOf(b) < 0 ) a.push(b);
+        return a;
+        },[]);
+        
+    // preffered square is a powerup square or neighbour of "O"
+    if(possibleSquares.length > 0){
+        let num = possibleSquares[Math.floor(Math.random() * possibleSquares.length)];
+
+        while(squares[num] === "@" && possibleSquares.length > 0){
+            squares[num] = "O";
+            points -= 1;
+            possibleSquares = possibleSquares.concat(this.checkNeighbours(squares, num));
+            possibleSquares.splice(possibleSquares.indexOf(num), 1);
+            possibleSquares = possibleSquares.reduce(function(a,b){
+                if (a.indexOf(b) < 0 ) a.push(b);
+                return a;
+                },[]);
+            num = possibleSquares[Math.floor(Math.random() * possibleSquares.length)];
+        }
+
+        if(squares[num] === null){
+            squares[num] = "O";
+            points += 1;
+        } else if(squares[num] === "$"){
+            squares[num] = "O";
+            points += 2;
+        } else if(squares[num] === "?"){
+            squares[num] = "O";
+            points += mysteryValues[Math.floor(Math.random() * mysteryValues.length)];
+        }
+
+    } else {
+        points += this.easyComputerPlayer(squares, emptySquares);
+    }
+
+    return points;
+}
+
+easyComputerPlayer(squares, emptySquares){
+    const mysteryValues = [-4,4];
+
+    let points = 0;
+    let num = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+    while(squares[num] === "@" && emptySquares.length > 0){
+        squares[num] = "O";
+        points -= 1;
+        emptySquares.splice(emptySquares.indexOf(num), 1);
+        num = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+    }
+
+    if(squares[num] === null){
+        squares[num] = "O";
+        points += 1;
+    } else if(squares[num] === "$"){
+        squares[num] = "O";
+        points += 2;
+    } else if(squares[num] === "?"){
+        squares[num] = "O";
+        points += mysteryValues[Math.floor(Math.random() * mysteryValues.length)];
+    }
+    return points;
 }
 
 checkNeighbours(squares, square){
@@ -829,7 +829,7 @@ class App extends React.Component {
         playerXName: "PlayerX",
         playerOName: "PlayerO",
         gameMode: "PvH",
-        boardSize: 3,
+        boardSize: 12,
         scoringLength: 3,
         boardType: "NoPowerups"
     };
