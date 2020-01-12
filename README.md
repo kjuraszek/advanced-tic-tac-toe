@@ -60,5 +60,18 @@ Types of squares:
 * @ subtracts 1 point from You but gives You additional move
 * (empty field) gives You 1 point
 
-
 Gameplay will be extended in the future.
+
+## Computer player
+
+There are two levels of a Computer player:
+* easy
+* hard
+
+Easy Computer player randomly selects one square.<br>
+Hard Computer player seeks for powerup squares and neighbours of "O" squares. If it's impossible to find them he behaves just like Easy Computer.
+
+## TODO
+
+All TODOs and ideas will be stored and updated in [this issue](https://github.com/kjuraszek/advanced-tic-tac-toe/issues/2).<br>
+Feel free to comment !
