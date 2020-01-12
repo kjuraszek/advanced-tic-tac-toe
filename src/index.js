@@ -118,7 +118,7 @@ class Game extends React.Component {
     } else if(squares[i] === "?") {
         
         if(xIsNext){
-           playerX += mysteryValues[Math.floor(Math.random() * mysteryValues.length)];
+            playerX += mysteryValues[Math.floor(Math.random() * mysteryValues.length)];
         } else {
             playerO += mysteryValues[Math.floor(Math.random() * mysteryValues.length)];
         }
@@ -643,15 +643,15 @@ render() {
       <div className="game">
         <div className="game-board" style={{minWidth: boardWidth }}>
           <Board
-            squares = {current.squares}
-            vertical = {current.vertical}
-            horizontal = {current.horizontal}
-            diagonal1 = {current.diagonal1}
-            diagonal2 = {current.diagonal2}
+            squares={current.squares}
+            vertical={current.vertical}
+            horizontal={current.horizontal}
+            diagonal1={current.diagonal1}
+            diagonal2={current.diagonal2}
                     
             onClick={i => this.handleClick(i)}
-            w = {width}
-            l = {length}
+            w={width}
+            l={length}
           />
         </div>
         <div className="game-info">
@@ -686,22 +686,25 @@ render() {
 }
 
 class Settings extends React.Component {
-  constructor(props) {
+    constructor(props) {
     super(props);
-      this.state = {
-      playerXName: this.props.settings.playerXName,
-      playerOName: this.props.settings.playerOName,
-      boardSize: this.props.settings.boardSize,
-      scoringLength: this.props.settings.scoringLength,
-      gameMode: this.props.settings.gameMode,
-      boardType: this.props.settings.boardType,
+        this.state = {
+        playerXName: this.props.settings.playerXName,
+        playerOName: this.props.settings.playerOName,
+        boardSize: this.props.settings.boardSize,
+        scoringLength: this.props.settings.scoringLength,
+        gameMode: this.props.settings.gameMode,
+        boardType: this.props.settings.boardType,
     };
-      
-  }
+        
+    }
     
     inputCheck(){
         let current = this.state;
-        if(current.playerXName.toString().length > 0 && current.boardSize.toString().length > 0 && current.scoringLength.toString().length > 0 && parseInt(current.scoringLength) <= parseInt(current.boardSize)){
+        if(current.playerXName.toString().length > 0 && 
+            current.boardSize.toString().length > 0 && 
+            current.scoringLength.toString().length > 0 && 
+            parseInt(current.scoringLength,  10) <= parseInt(current.boardSize, 10)){
             this.props.saveSettings(current);
         } else {
             alert("Inputs cannot be empty and scoring length cannot be higher than board size!")
@@ -790,24 +793,24 @@ class Settings extends React.Component {
             <div>
             <h3>Settings</h3>
             <p><label htmlFor="playerXName">Player X name: </label>
-            <input name = "playerXName" type="text" value={current.playerXName} onChange={(e) => this.setState({playerXName: e.target.value})} />
+            <input name="playerXName" type="text" value={current.playerXName} onChange={(e) => this.setState({playerXName: e.target.value})} />
             </p>
             <p><label htmlFor="playerOName">Player O name: </label>
-            <input name = "playerOName" type="text" value={current.playerOName} onChange={(e) => this.setState({playerOName: e.target.value})} />
+            <input name="playerOName" type="text" value={current.playerOName} onChange={(e) => this.setState({playerOName: e.target.value})} />
             </p>
             <p><label htmlFor="boardsize">Board size: </label>
-            <input name = "boardsize" type="number" min = "3" value={current.boardSize} onChange={(e) => this.setState({boardSize: e.target.value})} />
+            <input name="boardsize" type="number" min="3" value={current.boardSize} onChange={(e) => this.setState({boardSize: e.target.value})} />
             </p>
             <p><label htmlFor="scoringlength">Scoring length: </label>
-            <input name = "scoringlength" type="number" min = "3" value={current.scoringLength} onChange={(e) => this.setState({scoringLength: e.target.value})} /></p>
+            <input name="scoringlength" type="number" min="3" value={current.scoringLength} onChange={(e) => this.setState({scoringLength: e.target.value})} /></p>
             <p><label htmlFor="gamemode">Game mode: </label>
-            <select name = "gamemode" value={current.gameMode} onChange={(e) => this.setState({gameMode: e.target.value})}>
+            <select name="gamemode" value={current.gameMode} onChange={(e) => this.setState({gameMode: e.target.value})}>
             <option value="PvP">Player vs Player</option>
             <option value="PvE">Player vs EasyComp</option>
             <option value="PvH">Player vs HardComp</option>
             </select></p>
             <p><label htmlFor="boardtype">Board type: </label>
-            <select name = "boardtype" value={current.boardType} onChange={(e) => this.setState({boardType: e.target.value})}>
+            <select name="boardtype" value={current.boardType} onChange={(e) => this.setState({boardType: e.target.value})}>
             <option value="NoPowerups">Empty fields only</option>
             <option value="SomePowerups">Some powerups fields</option>
             <option value="ManyPowerups">Many powerups fields</option>
@@ -822,18 +825,18 @@ class Settings extends React.Component {
 }
     
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      settingsPage: true,
-        playerXName: "PlayerX",
-        playerOName: "PlayerO",
-        gameMode: "PvH",
-        boardSize: 12,
-        scoringLength: 3,
-        boardType: "NoPowerups"
-    };
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            settingsPage: true,
+            playerXName: "PlayerX",
+            playerOName: "PlayerO",
+            gameMode: "PvH",
+            boardSize: 12,
+            scoringLength: 3,
+            boardType: "NoPowerups"
+        };
+    }
     saveSettings(userSettings){
         this.setState({
             settingsPage: false,
@@ -856,12 +859,12 @@ class App extends React.Component {
         if (this.state.settingsPage){
             return(
                 
-                <Settings settings = {current} saveSettings = {(e) => this.saveSettings(e)} />
+                <Settings settings={current} saveSettings={(e) => this.saveSettings(e)} />
             )
         } else {
             return (
                 
-                <Game settings = {current} changeSettings = {() => this.changeSettings()} />
+                <Game settings={current} changeSettings={() => this.changeSettings()} />
             )
         }
     }
