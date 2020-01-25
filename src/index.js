@@ -413,10 +413,12 @@ calculatePoints(squares, player) {
     let diagonal2 = current.diagonal2;
 
     let points = 0;
-    for(let i=0;i<width**2;i++){
+    for(let i = 0; i < width ** 2; i++){
         if(squares[i] === player){
-            
-            if(i%width<=width-length && i<width**2 - (width * (length-1)) +1){
+
+            console.log((width ** 2 - (width * (length - 1))));
+            if(i % width <= width - length && i < width ** 2 - (width * (length - 1))){
+            //if(i%width<=width-length && i<width**2 - (width * (length-1)) +1){
                 if(!vertical[i] && this.verticalCheck(i,squares)){
                     points+=1;
                 } 
@@ -426,13 +428,14 @@ calculatePoints(squares, player) {
                 if(!diagonal1[i] && this.diagonalFirstCheck(i,squares)){
                     points+=1;
                 }
-                if(i >= width * (length-1)){
+                if(i >= width * (length - 1)){
                     if(!diagonal2[i] && this.diagonalSecondCheck(i,squares)){
                     points+=1;
                 }
                 }
 
-            } else if(i%width<=width-length && i >= width * (length-1)){
+            } else if(i % width <= width - length && i >= width * (length - 1)){
+            //} else if(i%width<=width-length && i >= width * (length-1)){
                 if(!horizontal[i] && this.horizontalCheck(i,squares)){
                     points+=1;
                 } 
@@ -441,11 +444,14 @@ calculatePoints(squares, player) {
                 }
 
 
-            } else if(i<width**2 - (width * (length-1))){
+            } else if(i < width ** 2 - (width * (length - 1))){
+            //} else if(i < width ** 2 - (width * (length-1))){
                 if(!vertical[i] && this.verticalCheck(i,squares)){
                     points+=1;
                 }  
-            } 
+            } else {
+                //console.log("nothing!");
+            }
         } 
     }      
   
