@@ -416,9 +416,7 @@ calculatePoints(squares, player) {
     for(let i = 0; i < width ** 2; i++){
         if(squares[i] === player){
 
-            console.log((width ** 2 - (width * (length - 1))));
             if(i % width <= width - length && i < width ** 2 - (width * (length - 1))){
-            //if(i%width<=width-length && i<width**2 - (width * (length-1)) +1){
                 if(!vertical[i] && this.verticalCheck(i,squares)){
                     points+=1;
                 } 
@@ -430,12 +428,11 @@ calculatePoints(squares, player) {
                 }
                 if(i >= width * (length - 1)){
                     if(!diagonal2[i] && this.diagonalSecondCheck(i,squares)){
-                    points+=1;
-                }
+                        points+=1;
+                    }
                 }
 
             } else if(i % width <= width - length && i >= width * (length - 1)){
-            //} else if(i%width<=width-length && i >= width * (length-1)){
                 if(!horizontal[i] && this.horizontalCheck(i,squares)){
                     points+=1;
                 } 
@@ -445,13 +442,10 @@ calculatePoints(squares, player) {
 
 
             } else if(i < width ** 2 - (width * (length - 1))){
-            //} else if(i < width ** 2 - (width * (length-1))){
                 if(!vertical[i] && this.verticalCheck(i,squares)){
                     points+=1;
                 }  
-            } else {
-                //console.log("nothing!");
-            }
+            } 
         } 
     }      
   
